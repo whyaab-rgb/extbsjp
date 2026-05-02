@@ -16,7 +16,7 @@ import streamlit.components.v1 as components
 # =========================================================
 # CONFIG
 # =========================================================
-st.set_page_config(page_title="BSJP Sniper AI Screener + Telegram", layout="wide")
+st.set_page_config(page_title="BSJP Main Logic Screener + Telegram", layout="wide")
 
 SYMBOLS = ["AALI", "ABBA", "ABDA", "ABMM", "ACES", "ACST", "ADCP", "ADES", "ADHI", "ADMF", "ADMG", "ADMR", "ADRO", "AGAR", "AGII", "AGRO", "AGRS", "AHAP", "AIMS", "AISA", "AKKU", "AKPI", "AKRA", "AKSI", "ALDO", "ALKA", "ALMI", "ALTO", "AMAG", "AMAR", "AMFG", "AMIN", "AMMN", "AMOR", "AMRT", "ANDI", "ANJT", "ANTM", "APEX", "APIC", "APII", "APLI", "APLN", "ARCI", "ARGO", "ARKA", "ARMY", "ARTA", "ARTI", "ASBI", "ASDM", "ASGR", "ASII", "ASJT", "ASMI", "ASRI", "ASRM", "ASSA", "ATAP", "ATIC", "AUTO", "AVIA", "AXIO", "BACA", "BAJA", "BALI", "BANK", "BAPA", "BAPI", "BATA", "BBCA", "BBHI", "BBKP", "BBLD", "BBMD", "BBNI", "BBRI", "BBTN", "BBYB", "BCAP", "BCIC", "BCIP", "BDMN", "BEKS", "BEST", "BFIN", "BHAT", "BHIT", "BIKA", "BIMA", "BINA", "BIPI", "BJBR", "BJTM", "BKDP", "BKSL", "BLTA", "BLUE", "BMAS", "BMRI", "BMSR", "BMTR", "BNBA", "BNBR", "BNGA", "BNII", "BNLI", "BOLA", "BOSS", "BPFI", "BPII", "BRAM", "BRIS", "BRMS", "BRNA", "BRPT", "BSDE", "BSSR", "BTEL", "BTON", "BTPN", "BTPS", "BUKA", "BULL", "BUMI", "BUVA", "BVIC", "CAMP", "CANI", "CARE", "CARS", "CBMF", "CBUT", "CCSI", "CEKA", "CENT", "CFIN", "CGAS", "CHEM", "CINT", "CITA", "CITY", "CLAY", "CLEO", "CMNP", "CMRY", "CNKO", "CNMA", "COAL", "CODE", "CPIN", "CPRO", "CSAP", "CSIS", "CTBN", "CTRA", "CTTH", "CUAN", "DADA", "DART", "DAYA", "DEAL", "DEFI", "DEPO", "DEWA", "DGIK", "DILD", "DKFT", "DLTA", "DMAS", "DNAR", "DOID", "DPNS", "DSFI", "DSNG", "DSSA", "DUTI", "DVLA", "EDGE", "EKAD", "ELSA", "EMDE", "EMTK", "ENAK", "ENRG", "ENVY", "EPAC", "ERAA", "ESSA", "ESTA", "ETWA", "FAPA", "FASW", "FILM", "FINN", "FIRE", "FISH", "FLMC", "FMII", "FPNI", "FREN", "GAMA", "GDST", "GEMS", "GGRM", "GIAA", "GJTL", "GLVA", "GMFI", "GOLD", "GOOD", "GPRA", "GSMF", "GTRA", "GTSI", "GULA", "HADI", "HAIS", "HAPS", "HATM", "HDFA", "HDIT", "HEAL", "HELI", "HERO", "HEXA", "HITS", "HKMU", "HKTI", "HMSP", "HOPE", "HRME", "HRTA", "HUMI", "HYAM", "IBST", "ICBP", "ICON", "IDEA", "IDPR", "IFII", "IGAR", "IIKP", "IKAI", "IKBI", "IKPM", "IMAS", "IMJS", "IMPC", "INAF", "INAI", "INCF", "INCI", "INCO", "INDF", "INDR", "INDX", "INDY", "INKP", "INOV", "INPC", "INPP", "INTA", "INTP", "IPCC", "IPCM", "IPOL", "ISAT", "ISSP", "ITIC", "ITMG", "JARR", "JAST", "JAYA", "JECC", "JGLE", "JIHD", "JKON", "JKSW", "JMAS", "JPFA", "JRPT", "JSKY", "KAEF", "KARW", "KAYU", "KBAG", "KBLM", "KBLV", "KBRI", "KDSI", "KICI", "KINO", "KIOS", "KKGI", "KLBF", "KMDS", "KMTR", "KOBX", "KOIN", "KONI", "KOPI", "KPAS", "KPIG", "KRAS", "KREN", "LABA", "LAPD", "LCGP", "LEAD", "LIFE", "LINK", "LION", "LMAS", "LMPI", "LMSH", "LPCK", "LPIN", "LPKR", "LPLI", "LSIP", "LTLS", "LUCY", "MAIN", "MAPA", "MAPB", "MARK", "MASA", "MAYA", "MBAP", "MBSS", "MCAS", "MCOL", "MDIA", "MDKA", "MDLN", "MEDC", "MEGA", "MERK", "META", "MFIN", "MFMI", "MGNA", "MGRO", "MICE", "MIDI", "MIKA", "MIRA", "MITI", "MKNT", "MLBI", "MLIA", "MLPL", "MLPT", "MMIX", "MMLP", "MNCN", "MNCS", "MNTO", "MPMX", "MPPA", "MRAT", "MREI", "MSIN", "MSKY", "MTDL", "MTFN", "MTLA", "MTMH", "MTPS", "MTSM", "MYOH", "MYOR", "NANO", "NASA", "NELY", "NFCX", "NICK", "NICL", "NIRO", "NISP", "NKON", "NOBU", "NRCA", "NTBK", "NUSA", "OASA", "OCAP", "OILS", "OKAS", "OMRE", "OPMS", "OPTI", "ORIN", "PACK", "PALM", "PAMG", "PANI", "PANS", "PBID", "PBRX", "PCAR", "PEGE", "PGAS", "PGEO", "PGLI", "PGUN", "PICO", "PINA", "PIPP", "PKPK", "PLAS", "PLIN", "PMJS", "PNBN", "PNBS", "PNGO", "PNIN", "PNLF", "POLA", "POLI", "POLU", "POOL", "PPGL", "PPRE", "PRAS", "PRDA", "PRIM", "PSAB", "PSDN", "PSGO", "PSKT", "PSSI", "PTBA", "PTIS", "PTPP", "PTRO", "PTSN", "PTSP", "PURE", "PWON", "RAAM", "RAJA", "RALS", "RANC", "RBMS", "RDTX", "REAL", "RELI", "RICY", "RIGS", "RISE", "RMBA", "RODA", "ROTI", "RUIS", "SAME", "SAMF", "SAPX", "SATU", "SBAT", "SBCO", "SBER", "SBMA", "SCBD", "SCMA", "SDMU", "SDPC", "SDRA", "SGER", "SGRO", "SIDO", "SILO", "SIMA", "SIMP", "SING", "SIPD", "SKBM", "SKLT", "SKRN", "SMAR", "SMBR", "SMCB", "SMDR", "SMGR", "SMIL", "SMKL", "SMKM", "SMMA", "SMMT", "SMRA", "SMSM", "SNLK", "SOCI", "SOHO", "SONA", "SPMA", "SPTO", "SRAJ", "SRTG", "SSIA", "SSMS", "SSTM", "STAR", "STTP", "SULI", "SUPR", "SURYA", "SWAT", "TALF", "TAMA", "TAMU", "TAPG", "TARA", "TAXI", "TBIG", "TBLA", "TBMS", "TCID", "TCPI", "TDPM", "TEBE", "TECH", "TELE", "TFAS", "TFCO", "TGKA", "TGRA", "TIFA", "TINS", "TKIM", "TLKM", "TMAS", "TOBA", "TOOL", "TOPS", "TOTL", "TOTO", "TOWR", "TPIA", "TPMA", "TRAM", "TRIM", "TRIN", "TRIO", "TRIS", "TRJA", "TRUK", "TSPC", "UANG", "UFOE", "ULTJ", "UNIC", "UNIQ", "UNIT", "UNSP", "UNTR", "UNVR", "VAST", "VICO", "VINS", "VIVA", "VKTR", "WAPO", "WEGE", "WICO", "WIDI", "WIIM", "WIKA", "WINE", "WINR", "WINS", "WIRG", "WIRY", "WOMF", "WOOD", "YELO", "YPAS", "YULE", "ZBRA", "ZINC"]
 
@@ -226,29 +226,19 @@ def send_telegram_message(bot_token: str, chat_id: str, message: str):
 
 
 def signal_emoji(signal: str, trend: str = "", gain: float = 0) -> str:
+    """Emoji sinyal FINAL: hanya mengikuti logika BSJP utama, bukan sinyal campuran."""
     s = str(signal).upper()
-    t = str(trend).upper()
-
-    if s in ["BUY SNIPER", "BSJP BUY SNIPER"]:
-        return "🎯 BUY SNIPER"
-    if s in ["BREAKOUT BUY", "BSJP BREAKOUT BUY"]:
+    if s == "BUY SNIPER":
+        return "🔥 BUY SNIPER"
+    if s == "BREAKOUT BUY":
         return "🚀 BREAKOUT BUY"
-    if s in ["EXIT / CUTLOSS", "BSJP EXIT"]:
+    if s == "WAIT CONFIRM":
+        return "⏳ WAIT CONFIRM"
+    if s == "NO ENTRY":
+        return "🚫 NO ENTRY"
+    if s == "EXIT / CUTLOSS":
         return "💀 EXIT"
-    if s in ["NO ENTRY", "BSJP NO ENTRY"]:
-        return "⛔ NO ENTRY"
-    if s in ["SUPER", "ON TRACK", "HAKA", "AKUM", "GC NOW"]:
-        return "🔥 BUY"
-    if s == "REBOUND":
-        return "🔄 REBOUND"
-    if s in ["DIST", "WASPADA OB"]:
-        return "⚠️ SELL/WATCH"
-    if t == "BULL" and gain >= 0:
-        return "📈 HOLD"
-    if t == "BEAR" or gain < -3:
-        return "🔻 SELL"
     return "⏳ WAIT"
-
 
 def risk_level(score_accum: float, rsi: float, signal: str) -> str:
     s = str(signal).upper()
@@ -502,28 +492,29 @@ def get_signal_label(close_, ma20, ma50, ema9, rsi, macd, macd_signal, vol, vol_
 
 
 def get_action_label(signal_label, close_, entry, trend):
-    if signal_label == "SUPER":
-        return "SIAP BELI"
-    if signal_label in ["ON TRACK", "AKUM", "HAKA", "GC NOW", "REBOUND", "BUY SNIPER", "BREAKOUT BUY"]:
-        if not pd.isna(entry) and close_ <= entry * 1.02:
-            return "AT ENTRY"
-        return "WATCH"
-    if signal_label in ["EXIT / CUTLOSS", "NO ENTRY"]:
-        return "AVOID"
-    if signal_label == "WASPADA OB":
-        return "WASPADA OB"
-    if trend == "BULL":
-        return "HOLD"
-    return "WAIT GC"
-
+    """Aksi utama hanya dari sinyal BSJP, tidak dicampur swing/bandar."""
+    s = str(signal_label).upper()
+    if s in ["BUY SNIPER", "BREAKOUT BUY"]:
+        return "CONFIRMED BUY"
+    if s == "WAIT CONFIRM":
+        return "WAIT CONFIRM"
+    if s == "NO ENTRY":
+        return "NO ENTRY"
+    if s == "EXIT / CUTLOSS":
+        return "EXIT"
+    return "WAIT"
 
 def bsjp_sniper_logic(close_, entry_low, entry_high, ma5, ma20, rsi, rvol, support, resistance, gain, vol, vol_ma20, open_, wick):
     """
-    Logika BSJP sniper anti-FOMO. Bukan 100% anti meleset, tapi lebih ketat:
-    hanya memberi BUY saat harga berada di zona entry / breakout valid, RSI sehat, RVOL aktif, dan risk kecil.
+    BSJP MAIN LOGIC — keputusan utama screener.
+
+    Prinsip:
+    - BUY hanya keluar jika konfirmasi lengkap.
+    - Tidak memakai sinyal swing/bandar sebagai pengganti BUY.
+    - Jika belum lengkap, hasilnya WAIT CONFIRM / NO ENTRY / EXIT.
     """
     if any(pd.isna(v) for v in [close_, rsi, support, resistance]):
-        return {"label": "WAIT", "score": 0, "reason": "Data belum lengkap"}
+        return {"label": "WAIT CONFIRM", "score": 0, "reason": "Data belum lengkap"}
 
     if pd.isna(ma5):
         ma5 = close_
@@ -535,64 +526,120 @@ def bsjp_sniper_logic(close_, entry_low, entry_high, ma5, ma20, rsi, rvol, suppo
         open_ = close_
     if pd.isna(wick):
         wick = 0
+    if pd.isna(vol):
+        vol = 0
+    if pd.isna(vol_ma20):
+        vol_ma20 = 0
 
-    risk_to_support = ((close_ - support) / close_) * 100 if close_ > 0 else 99
     green_candle = close_ >= open_
-    volume_ok = (not pd.isna(vol_ma20)) and vol_ma20 > 0 and vol >= vol_ma20 * 1.2
+    red_candle = close_ < open_
     in_entry_zone = (not pd.isna(entry_low)) and (not pd.isna(entry_high)) and entry_low <= close_ <= entry_high
-    near_ma20 = close_ >= ma20 * 0.98
     above_ma5 = close_ > ma5
-    breakout = close_ > resistance and rvol >= 180 and 50 <= rsi <= 70 and green_candle
+    near_or_above_ma20 = close_ >= ma20 * 0.98
+    volume_confirmed = vol_ma20 > 0 and vol >= vol_ma20 * 1.20
+    rvol_confirmed = rvol >= 150
+    rvol_early = rvol >= 110
+    rsi_buy_zone = 45 <= rsi <= 65
+    rsi_breakout_zone = 50 <= rsi <= 70
+    risk_to_support = ((close_ - support) / close_) * 100 if close_ > 0 else 99
+    risk_tight = risk_to_support <= 3.5
+    breakout_valid = close_ > resistance and rvol >= 180 and rsi_breakout_zone and green_candle and volume_confirmed
+    fomo_price = gain > 5 or close_ > ma5 * 1.05
+    distribution_risk = (rvol >= 150 and red_candle) or (wick >= 45 and gain > 0)
 
+    # 1) EXIT lebih prioritas dari semua sinyal.
+    if close_ < support or rsi < 40 or gain <= -3:
+        return {
+            "label": "EXIT / CUTLOSS",
+            "score": 5,
+            "reason": "Support jebol / RSI < 40 / harga turun tajam",
+        }
+
+    # 2) NO ENTRY: kondisi berbahaya, tidak boleh dipaksa buy.
     no_entry_reasons = []
     if rsi > 72:
         no_entry_reasons.append("RSI overbought")
-    if gain > 5 and close_ > ma5 * 1.04:
+    if fomo_price:
         no_entry_reasons.append("harga sudah jauh / FOMO")
-    if rvol >= 150 and not green_candle:
-        no_entry_reasons.append("RVOL besar tapi candle merah")
-    if wick >= 45 and gain > 0:
-        no_entry_reasons.append("wick tinggi rawan distribusi")
-
-    if close_ < support or rsi < 40 or gain <= -3:
-        return {"label": "EXIT / CUTLOSS", "score": 5, "reason": "Support jebol / RSI lemah / gain harian turun tajam"}
+    if distribution_risk:
+        no_entry_reasons.append("volume tinggi tapi rawan distribusi")
+    if close_ < ma5 and close_ < ma20:
+        no_entry_reasons.append("harga di bawah MA5 dan MA20")
 
     if no_entry_reasons:
-        return {"label": "NO ENTRY", "score": 15, "reason": ", ".join(no_entry_reasons)}
+        return {
+            "label": "NO ENTRY",
+            "score": 15,
+            "reason": ", ".join(no_entry_reasons),
+        }
 
+    # 3) Skor hanya untuk logika BSJP utama.
     score = 0
     if in_entry_zone:
         score += 25
-    if 45 <= rsi <= 65:
+    if rsi_buy_zone:
         score += 20
-    if rvol >= 150:
+    if rvol_confirmed:
         score += 20
-    elif rvol >= 120:
-        score += 12
+    elif rvol_early:
+        score += 10
     if above_ma5:
         score += 10
-    if near_ma20:
+    if near_or_above_ma20:
         score += 10
-    if risk_to_support <= 3:
+    if risk_tight:
         score += 10
-    if green_candle and volume_ok:
+    if green_candle and volume_confirmed:
         score += 10
-    if breakout:
+    if breakout_valid:
         score += 25
 
     score = max(0, min(int(score), 100))
 
-    if in_entry_zone and 45 <= rsi <= 65 and rvol >= 150 and above_ma5 and near_ma20 and risk_to_support <= 3:
-        return {"label": "BUY SNIPER", "score": max(score, 80), "reason": "Entry zone + RSI sehat + RVOL aktif + risk ketat"}
+    # 4) BUY SNIPER: konfirmasi beli paling jelas.
+    if (
+        in_entry_zone
+        and rsi_buy_zone
+        and rvol_confirmed
+        and above_ma5
+        and near_or_above_ma20
+        and risk_tight
+        and green_candle
+    ):
+        return {
+            "label": "BUY SNIPER",
+            "score": max(score, 85),
+            "reason": "Entry zone + RSI sehat + RVOL aktif + MA valid + risk ketat",
+        }
 
-    if breakout:
-        return {"label": "BREAKOUT BUY", "score": max(score, 85), "reason": "Tembus resistance dengan RVOL dan RSI sehat"}
+    # 5) BREAKOUT BUY: bukan entry bawah, tapi valid kalau tembus resistance.
+    if breakout_valid:
+        return {
+            "label": "BREAKOUT BUY",
+            "score": max(score, 88),
+            "reason": "Breakout resistance + RVOL kuat + candle hijau + volume confirm",
+        }
 
-    if score >= 65:
-        return {"label": "WATCH TIGHT", "score": score, "reason": "Syarat mulai bagus, tunggu konfirmasi candle/volume"}
+    # 6) WAIT CONFIRM: belum beli, meski sebagian syarat mulai bagus.
+    wait_notes = []
+    if not in_entry_zone and close_ <= resistance:
+        wait_notes.append("belum di entry zone / belum breakout")
+    if not rsi_buy_zone:
+        wait_notes.append("RSI belum ideal")
+    if not rvol_confirmed:
+        wait_notes.append("RVOL belum confirm")
+    if not above_ma5:
+        wait_notes.append("belum di atas MA5")
+    if not risk_tight:
+        wait_notes.append("risk ke support masih lebar")
+    if not green_candle:
+        wait_notes.append("candle belum hijau")
 
-    return {"label": "WAIT", "score": score, "reason": "Belum cukup kuat untuk entry"}
-
+    return {
+        "label": "WAIT CONFIRM",
+        "score": score,
+        "reason": ", ".join(wait_notes[:3]) if wait_notes else "Tunggu konfirmasi lanjutan",
+    }
 
 def compute_scores(df: pd.DataFrame):
     close_ = latest(df["Close"])
@@ -850,7 +897,9 @@ def build_row(symbol: str, daily_df: pd.DataFrame, intraday_5m: pd.DataFrame):
     trend = get_trend(close_, ma20, ma50)
     phase = get_phase(df)
     rsi_sig = get_rsi_signal(rsi, macd, macd_signal)
-    sinyal_base = get_signal_label(close_, ma20, ma50, ema9, rsi, macd, macd_signal, vol, vol_ma20, support, resistance, wick)
+
+    # FINAL: sinyal utama hanya memakai BSJP sniper logic.
+    # Logika swing/bandar tetap dihitung sebagai informasi pendukung, bukan penentu BUY.
     bsjp_sniper = bsjp_sniper_logic(
         close_=close_,
         entry_low=entry_low,
@@ -867,20 +916,17 @@ def build_row(symbol: str, daily_df: pd.DataFrame, intraday_5m: pd.DataFrame):
         open_=open_,
         wick=wick,
     )
-
-    # Prioritaskan sinyal sniper yang bersifat protektif / sangat kuat.
-    if bsjp_sniper["label"] in ["BUY SNIPER", "BREAKOUT BUY", "EXIT / CUTLOSS", "NO ENTRY"]:
-        sinyal = bsjp_sniper["label"]
-    else:
-        sinyal = sinyal_base
+    sinyal_base = "BSJP ONLY"
+    sinyal = bsjp_sniper["label"]
 
     aksi = get_action_label(sinyal, close_, entry, trend)
     val = close_ * vol if not pd.isna(close_) and not pd.isna(vol) else np.nan
 
     scores = compute_scores(df)
     total = scores["scalping"] + scores["bsjp"] + scores["swing"] + scores["bandar"]
-    accum_score = compute_accum_score(close_, ma20, ma50, rsi, rvol, val, phase, sinyal, gain)
-    accum_score = max(accum_score, bsjp_sniper["score"])
+
+    # FINAL: AI SCORE mengikuti skor BSJP sniper utama.
+    accum_score = bsjp_sniper["score"]
 
     return {
         "symbol": clean_symbol(symbol),
@@ -965,7 +1011,7 @@ def run_screener_cached(symbols_tuple, period, interval, max_price, min_price, u
 
     df = pd.DataFrame(rows)
     df = df.sort_values(
-        ["score_accum", "score_total", "rvol", "gain"],
+        ["bsjp_sniper_score", "score_accum", "rvol", "gain"],
         ascending=[False, False, False, False]
     ).reset_index(drop=True)
 
@@ -1010,13 +1056,11 @@ def apply_filters(
         x = x[x["fase"].isin(selected_phases)]
 
     if only_top_signal:
-        x = x[
-            (x["sinyal"].isin(["BUY SNIPER", "BREAKOUT BUY", "SUPER", "ON TRACK", "AKUM", "HAKA", "GC NOW"])) |
-            ((x["score_accum"] >= 60) & (x["rvol"].fillna(0) >= 120))
-        ]
+        # TOP SIGNAL hanya BUY jelas dari BSJP main logic.
+        x = x[x["sinyal"].isin(["BUY SNIPER", "BREAKOUT BUY"])]
 
     return x.sort_values(
-        ["score_accum", "score_total", "rvol", "gain"],
+        ["bsjp_sniper_score", "score_accum", "rvol", "gain"],
         ascending=[False, False, False, False]
     ).reset_index(drop=True)
 
@@ -1040,7 +1084,7 @@ def bg_signal(v):
     mapping = {
         "BUY SNIPER": "#22c55e",
         "BREAKOUT BUY": "#9333ea",
-        "WATCH TIGHT": "#2563eb",
+        "WAIT CONFIRM": "#2563eb",
         "NO ENTRY": "#991b1b",
         "EXIT / CUTLOSS": "#b91c1c",
         "SUPER": "#7e22ce",
@@ -1243,9 +1287,9 @@ def make_html_table(df: pd.DataFrame, title: str, sub: str):
 # =========================================================
 # HEADER
 # =========================================================
-st.title("BSJP SNIPER AI SCREENER — FINAL ON POINT")
+st.title("BSJP MAIN LOGIC SCREENER — CLEAR BUY CONFIRMATION")
 st.markdown(
-    '<div class="small-note">Logika BSJP Sniper + Entry Zone | Filter ketat anti FOMO | Top Signal Telegram | Auto Refresh Anti-Spam</div>',
+    '<div class="small-note">BSJP menjadi logika utama | BUY hanya jika konfirmasi jelas | Entry Zone + RVOL + RSI + MA + Risk</div>',
     unsafe_allow_html=True
 )
 
@@ -1295,29 +1339,29 @@ with st.sidebar:
     min_price = st.number_input("Harga minimum", min_value=0, value=0, step=10)
     max_price = st.number_input("Harga maksimum", min_value=1, value=DEFAULT_MAX_PRICE, step=50)
 
-    min_score = st.slider("Minimal AI Score", 0, 100, 40)
+    min_score = st.slider("Minimal BSJP Sniper Score", 0, 100, 40)
     min_total_score = st.slider("Minimal Total Score", 0, 30, 0)
     min_rvol = st.slider("Minimal RVOL %", 0, 500, 0)
     min_value_b = st.number_input("Minimal Value (Biliar)", min_value=0.0, value=0.0, step=1.0)
     min_value = min_value_b * 1_000_000_000
 
-    signal_options = ["BUY SNIPER", "BREAKOUT BUY", "WATCH TIGHT", "SUPER", "ON TRACK", "AKUM", "HAKA", "GC NOW", "REBOUND", "WAIT", "NO ENTRY", "EXIT / CUTLOSS", "WASPADA OB", "DIST"]
+    signal_options = ["BUY SNIPER", "BREAKOUT BUY", "WAIT CONFIRM", "NO ENTRY", "EXIT / CUTLOSS"]
     selected_signals = st.multiselect("Filter Sinyal", signal_options, default=[])
 
     selected_trends = st.multiselect("Filter Trend", ["BULL", "BEAR", "NEUTRAL"], default=[])
     selected_phases = st.multiselect("Filter Fase", ["BIG AKUM", "AKUM", "NEUTRAL", "DIST", "BIG DIST"], default=[])
 
-    only_top_signal = st.checkbox("Tampilkan hanya TOP SIGNAL", value=False)
+    only_top_signal = st.checkbox("Tampilkan hanya CLEAR BUY (BUY SNIPER / BREAKOUT)", value=False)
     top_n_display = st.number_input("Jumlah hasil tabel", min_value=5, max_value=100, value=DEFAULT_TOP_N, step=5)
 
     st.markdown("---")
     st.header("3. Telegram")
 
     telegram_enabled = st.checkbox("Aktifkan Telegram", value=False)
-    telegram_bot_token = st.text_input("8725332873:AAFa-Uff8dCAYm_L0_aMQ0A9ZPIjLodp7VE", type="password")
-    telegram_chat_id = st.text_input("1297977478")
+    telegram_bot_token = st.text_input("Bot Token", type="password")
+    telegram_chat_id = st.text_input("Chat ID")
     telegram_top_n = st.number_input("Kirim Top N", min_value=1, max_value=10, value=5, step=1)
-    telegram_only_top_signal = st.checkbox("Telegram hanya TOP SIGNAL", value=True)
+    telegram_only_top_signal = st.checkbox("Telegram hanya CLEAR BUY", value=True)
 
     send_test_btn = st.button("Tes Kirim Telegram", use_container_width=True)
 
@@ -1418,7 +1462,7 @@ if telegram_only_top_signal:
         min_total_score=int(min_total_score),
         min_rvol=max(int(min_rvol), 100),
         min_value=float(min_value),
-        selected_signals=["BUY SNIPER", "BREAKOUT BUY", "SUPER", "ON TRACK", "AKUM", "HAKA", "GC NOW"],
+        selected_signals=["BUY SNIPER", "BREAKOUT BUY"],
         selected_trends=selected_trends,
         selected_phases=selected_phases,
         only_top_signal=True,
@@ -1507,8 +1551,8 @@ else:
     components.html(
         make_html_table(
             display_df,
-            "BSJP SNIPER AI SCREENER — FINAL ON POINT",
-            "Ranking berdasarkan BSJP Sniper + AI Score + RVOL + Entry Zone"
+            "BSJP MAIN LOGIC SCREENER — CLEAR BUY CONFIRMATION",
+            "Ranking berdasarkan BSJP Sniper Score utama + RVOL + Entry Zone"
         ),
         height=560,
         scrolling=True
