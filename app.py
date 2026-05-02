@@ -506,12 +506,15 @@ def get_action_label(signal_label, close_, entry, trend):
 
 def bsjp_sniper_logic(close_, entry_low, entry_high, ma5, ma20, rsi, rvol, support, resistance, gain, vol, vol_ma20, open_, wick):
     """
-    BSJP MAIN LOGIC — keputusan utama screener.
+    BSJP BALANCED MAIN LOGIC — sinyal utama screener.
 
-    Prinsip:
-    - BUY hanya keluar jika konfirmasi lengkap.
-    - Tidak memakai sinyal swing/bandar sebagai pengganti BUY.
-    - Jika belum lengkap, hasilnya WAIT CONFIRM / NO ENTRY / EXIT.
+    Versi ini dibuat tidak terlalu ketat, tapi tetap jelas:
+    - BUY SNIPER = konfirmasi kuat.
+    - BREAKOUT BUY = tembus resistance dengan volume/RVOL.
+    - EARLY BUY = mulai layak pantau entry awal.
+    - WATCH BUY = belum buy, tapi sudah masuk radar.
+    - WAIT CONFIRM = belum cukup data/konfirmasi.
+    - NO ENTRY / EXIT = hindari.
     """
     if any(pd.isna(v) for v in [close_, rsi, support, resistance]):
         return {"label": "WAIT CONFIRM", "score": 0, "reason": "Data belum lengkap"}
@@ -534,106 +537,142 @@ def bsjp_sniper_logic(close_, entry_low, entry_high, ma5, ma20, rsi, rvol, suppo
     green_candle = close_ >= open_
     red_candle = close_ < open_
     in_entry_zone = (not pd.isna(entry_low)) and (not pd.isna(entry_high)) and entry_low <= close_ <= entry_high
-    above_ma5 = close_ > ma5
-    near_or_above_ma20 = close_ >= ma20 * 0.98
-    volume_confirmed = vol_ma20 > 0 and vol >= vol_ma20 * 1.20
-    rvol_confirmed = rvol >= 150
-    rvol_early = rvol >= 110
-    rsi_buy_zone = 45 <= rsi <= 65
-    rsi_breakout_zone = 50 <= rsi <= 70
+    near_entry_zone = (not pd.isna(entry_low)) and (not pd.isna(entry_high)) and entry_low * 0.98 <= close_ <= entry_high * 1.03
+    above_ma5 = close_ >= ma5
+    near_or_above_ma20 = close_ >= ma20 * 0.97
+    volume_active = vol_ma20 > 0 and vol >= vol_ma20 * 1.00
+    volume_strong = vol_ma20 > 0 and vol >= vol_ma20 * 1.20
+    rsi_buy_zone = 42 <= rsi <= 68
+    rsi_early_zone = 38 <= rsi <= 72
+    rsi_breakout_zone = 48 <= rsi <= 72
+    rvol_active = rvol >= 100
+    rvol_early = rvol >= 80
     risk_to_support = ((close_ - support) / close_) * 100 if close_ > 0 else 99
+    risk_ok = risk_to_support <= 5
     risk_tight = risk_to_support <= 3.5
-    breakout_valid = close_ > resistance and rvol >= 180 and rsi_breakout_zone and green_candle and volume_confirmed
-    fomo_price = gain > 5 or close_ > ma5 * 1.05
-    distribution_risk = (rvol >= 150 and red_candle) or (wick >= 45 and gain > 0)
+    breakout_valid = close_ > resistance and rvol >= 120 and rsi_breakout_zone and not red_candle
 
-    # 1) EXIT lebih prioritas dari semua sinyal.
-    if close_ < support or rsi < 40 or gain <= -3:
+    # EXIT lebih prioritas. Ini untuk jaga risiko.
+    if close_ < support or rsi < 35 or gain <= -4:
         return {
             "label": "EXIT / CUTLOSS",
-            "score": 5,
-            "reason": "Support jebol / RSI < 40 / harga turun tajam",
+            "score": 10,
+            "reason": "Support jebol / RSI lemah / turun tajam",
         }
 
-    # 2) NO ENTRY: kondisi berbahaya, tidak boleh dipaksa buy.
+    # NO ENTRY hanya untuk kondisi yang benar-benar bahaya.
     no_entry_reasons = []
-    if rsi > 72:
-        no_entry_reasons.append("RSI overbought")
-    if fomo_price:
-        no_entry_reasons.append("harga sudah jauh / FOMO")
-    if distribution_risk:
-        no_entry_reasons.append("volume tinggi tapi rawan distribusi")
-    if close_ < ma5 and close_ < ma20:
-        no_entry_reasons.append("harga di bawah MA5 dan MA20")
+    if rsi > 78:
+        no_entry_reasons.append("RSI terlalu overbought")
+    if gain > 8 and close_ > ma5 * 1.08:
+        no_entry_reasons.append("harga sudah terlalu jauh / FOMO")
+    if rvol >= 180 and red_candle and wick >= 45:
+        no_entry_reasons.append("volume besar tapi candle merah/wick tinggi")
+    if close_ < ma5 and close_ < ma20 and rsi < 45:
+        no_entry_reasons.append("harga lemah di bawah MA5/MA20")
 
     if no_entry_reasons:
         return {
             "label": "NO ENTRY",
-            "score": 15,
+            "score": 20,
             "reason": ", ".join(no_entry_reasons),
         }
 
-    # 3) Skor hanya untuk logika BSJP utama.
+    # Sistem poin balanced: tidak semua syarat harus sempurna.
     score = 0
+    confirm = 0
+
     if in_entry_zone:
-        score += 25
+        score += 22
+        confirm += 2
+    elif near_entry_zone:
+        score += 14
+        confirm += 1
+
     if rsi_buy_zone:
         score += 20
-    if rvol_confirmed:
-        score += 20
-    elif rvol_early:
+        confirm += 2
+    elif rsi_early_zone:
         score += 10
+        confirm += 1
+
+    if rvol_active:
+        score += 18
+        confirm += 2
+    elif rvol_early:
+        score += 9
+        confirm += 1
+
     if above_ma5:
         score += 10
+        confirm += 1
+
     if near_or_above_ma20:
         score += 10
-    if risk_tight:
+        confirm += 1
+
+    if risk_ok:
         score += 10
-    if green_candle and volume_confirmed:
-        score += 10
+        confirm += 1
+    elif risk_to_support <= 7:
+        score += 5
+
+    if green_candle:
+        score += 5
+        confirm += 1
+
+    if volume_active:
+        score += 5
+        confirm += 1
+
     if breakout_valid:
         score += 25
 
     score = max(0, min(int(score), 100))
 
-    # 4) BUY SNIPER: konfirmasi beli paling jelas.
-    if (
-        in_entry_zone
-        and rsi_buy_zone
-        and rvol_confirmed
-        and above_ma5
-        and near_or_above_ma20
-        and risk_tight
-        and green_candle
-    ):
-        return {
-            "label": "BUY SNIPER",
-            "score": max(score, 85),
-            "reason": "Entry zone + RSI sehat + RVOL aktif + MA valid + risk ketat",
-        }
-
-    # 5) BREAKOUT BUY: bukan entry bawah, tapi valid kalau tembus resistance.
+    # BREAKOUT BUY: lebih longgar dari versi lama, tapi tetap butuh resistance + RVOL + RSI.
     if breakout_valid:
         return {
             "label": "BREAKOUT BUY",
             "score": max(score, 88),
-            "reason": "Breakout resistance + RVOL kuat + candle hijau + volume confirm",
+            "reason": "Breakout resistance + RVOL aktif + RSI masih layak",
         }
 
-    # 6) WAIT CONFIRM: belum beli, meski sebagian syarat mulai bagus.
+    # BUY SNIPER: konfirmasi kuat tapi tidak terlalu kaku.
+    if confirm >= 7 and in_entry_zone and rsi_buy_zone and rvol_active and risk_ok:
+        return {
+            "label": "BUY SNIPER",
+            "score": max(score, 85),
+            "reason": "Entry zone + RSI sehat + RVOL aktif + risk masih aman",
+        }
+
+    # EARLY BUY: mulai boleh dipantau untuk entry awal, bukan sinyal all-in.
+    if confirm >= 6 and near_entry_zone and rsi_early_zone and rvol_early:
+        return {
+            "label": "EARLY BUY",
+            "score": max(score, 72),
+            "reason": "Mulai valid: dekat entry zone + RSI/RVOL cukup",
+        }
+
+    # WATCH BUY: masuk radar, tunggu 1 konfirmasi lagi.
+    if confirm >= 4:
+        return {
+            "label": "WATCH BUY",
+            "score": max(score, 58),
+            "reason": "Masuk radar, tunggu volume/candle/MA lebih kuat",
+        }
+
     wait_notes = []
-    if not in_entry_zone and close_ <= resistance:
-        wait_notes.append("belum di entry zone / belum breakout")
-    if not rsi_buy_zone:
-        wait_notes.append("RSI belum ideal")
-    if not rvol_confirmed:
-        wait_notes.append("RVOL belum confirm")
-    if not above_ma5:
-        wait_notes.append("belum di atas MA5")
-    if not risk_tight:
+    if not near_entry_zone and close_ <= resistance:
+        wait_notes.append("belum dekat entry zone")
+    if not rsi_early_zone:
+        wait_notes.append("RSI belum mendukung")
+    if not rvol_early:
+        wait_notes.append("RVOL masih lemah")
+    if not near_or_above_ma20:
+        wait_notes.append("belum dekat MA20")
+    if risk_to_support > 7:
         wait_notes.append("risk ke support masih lebar")
-    if not green_candle:
-        wait_notes.append("candle belum hijau")
 
     return {
         "label": "WAIT CONFIRM",
@@ -1056,8 +1095,8 @@ def apply_filters(
         x = x[x["fase"].isin(selected_phases)]
 
     if only_top_signal:
-        # TOP SIGNAL hanya BUY jelas dari BSJP main logic.
-        x = x[x["sinyal"].isin(["BUY SNIPER", "BREAKOUT BUY"])]
+        # TOP SIGNAL balanced: BUY jelas + early/watch buy.
+        x = x[x["sinyal"].isin(["BUY SNIPER", "BREAKOUT BUY", "EARLY BUY", "WATCH BUY"])]
 
     return x.sort_values(
         ["bsjp_sniper_score", "score_accum", "rvol", "gain"],
@@ -1287,9 +1326,9 @@ def make_html_table(df: pd.DataFrame, title: str, sub: str):
 # =========================================================
 # HEADER
 # =========================================================
-st.title("BSJP MAIN LOGIC SCREENER — CLEAR BUY CONFIRMATION")
+st.title("BSJP BALANCED SNIPER SCREENER — CLEAR BUT NOT TOO TIGHT")
 st.markdown(
-    '<div class="small-note">BSJP menjadi logika utama | BUY hanya jika konfirmasi jelas | Entry Zone + RVOL + RSI + MA + Risk</div>',
+    '<div class="small-note">BSJP menjadi logika utama | Balanced mode: BUY jelas tapi tidak terlalu ketat | Entry Zone + RVOL + RSI + MA + Risk</div>',
     unsafe_allow_html=True
 )
 
@@ -1345,7 +1384,7 @@ with st.sidebar:
     min_value_b = st.number_input("Minimal Value (Biliar)", min_value=0.0, value=0.0, step=1.0)
     min_value = min_value_b * 1_000_000_000
 
-    signal_options = ["BUY SNIPER", "BREAKOUT BUY", "WAIT CONFIRM", "NO ENTRY", "EXIT / CUTLOSS"]
+    signal_options = ["BUY SNIPER", "BREAKOUT BUY", "EARLY BUY", "WATCH BUY", "WAIT CONFIRM", "NO ENTRY", "EXIT / CUTLOSS"]
     selected_signals = st.multiselect("Filter Sinyal", signal_options, default=[])
 
     selected_trends = st.multiselect("Filter Trend", ["BULL", "BEAR", "NEUTRAL"], default=[])
@@ -1462,7 +1501,7 @@ if telegram_only_top_signal:
         min_total_score=int(min_total_score),
         min_rvol=max(int(min_rvol), 100),
         min_value=float(min_value),
-        selected_signals=["BUY SNIPER", "BREAKOUT BUY"],
+        selected_signals=["BUY SNIPER", "BREAKOUT BUY", "EARLY BUY"],
         selected_trends=selected_trends,
         selected_phases=selected_phases,
         only_top_signal=True,
@@ -1551,8 +1590,8 @@ else:
     components.html(
         make_html_table(
             display_df,
-            "BSJP MAIN LOGIC SCREENER — CLEAR BUY CONFIRMATION",
-            "Ranking berdasarkan BSJP Sniper Score utama + RVOL + Entry Zone"
+            "BSJP BALANCED SNIPER SCREENER — CLEAR BUT NOT TOO TIGHT",
+            "Ranking berdasarkan BSJP Balanced Sniper Score + RVOL + Entry Zone"
         ),
         height=560,
         scrolling=True
