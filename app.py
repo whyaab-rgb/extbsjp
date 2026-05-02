@@ -1314,8 +1314,8 @@ with st.sidebar:
     st.header("3. Telegram")
 
     telegram_enabled = st.checkbox("Aktifkan Telegram", value=False)
-    telegram_bot_token = st.text_input("Bot Token", type="password")
-    telegram_chat_id = st.text_input("Chat ID")
+    telegram_bot_token = st.text_input("8725332873:AAFa-Uff8dCAYm_L0_aMQ0A9ZPIjLodp7VE", type="password")
+    telegram_chat_id = st.text_input("1297977478")
     telegram_top_n = st.number_input("Kirim Top N", min_value=1, max_value=10, value=5, step=1)
     telegram_only_top_signal = st.checkbox("Telegram hanya TOP SIGNAL", value=True)
 
